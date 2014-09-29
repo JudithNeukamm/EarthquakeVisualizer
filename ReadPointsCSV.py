@@ -49,7 +49,7 @@ class ReadPointsCSV(object):
         line = input_file.readline()
     
         # Loop through lines
-        while line:
+        while line and self.number < 1000:
             # Split the line into data
             data = line.split(';')
             # Skip the commented lines
@@ -84,6 +84,7 @@ class ReadPointsCSV(object):
     
             # read next line
             line = input_file.readline()
+            self.number = self.number + 1
     
         print LatMin, LatMax, LonMin, LonMax
         # Compute the range of the data
