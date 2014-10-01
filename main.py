@@ -77,8 +77,9 @@ for i in range(0, points.GetNumberOfPoints()):
 
 # ... add color to each earthquake (point in dataset), depends on depth (z-value)
 colorTransferFunction = vtk.vtkColorTransferFunction()
-colorTransferFunction.AddRGBPoint(0.0, 0.0, 1.0, 0.0)
-colorTransferFunction.AddRGBPoint(100.0, 1.0, 0.0, 0.0)
+colorTransferFunction.AddRGBPoint(0.0, 0.0, 0.0, 1.0)
+colorTransferFunction.AddRGBPoint(5.0, 0.0, 1.0, 0.0)
+colorTransferFunction.AddRGBPoint(10.0, 1.0, 0.0, 0.0)
 
 
 mapper = vtk.vtkPolyDataMapper()
@@ -125,6 +126,21 @@ outlineActor.GetProperty().SetLineWidth(2.0)
 
 
 
+# add scalar bar
+scalarBar = vtk.vtkScalarBarActor()
+scalarBar.SetLookupTable(ballMapper.GetLookupTable())
+# set properties ...
+scalarBar.SetTitle("Strength")
+scalarBar.GetLabelTextProperty().SetColor(0,0,1)
+scalarBar.GetTitleTextProperty().SetColor(0,0,1)
+# ...and size
+scalarBar.SetWidth(.12)
+scalarBar.SetHeight(.95)
+# ... and position
+spc = scalarBar.GetPositionCoordinate()
+spc.SetCoordinateSystemToNormalizedViewport()
+spc.SetValue(0.05,0.05)
+
 
 # Create a text property for both cube axes
 tprop = vtk.vtkTextProperty()
@@ -165,6 +181,7 @@ renderer.SetBackground(0.2, 0.2, 0.2)
 renderer.AddActor(actor)
 renderer.AddActor(outlineActor)
 renderer.AddActor(ballActor)
+renderer.AddActor(scalarBar)
 renderer.AddActor(txt)
 
 
