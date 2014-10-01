@@ -68,33 +68,33 @@ class ReadPointsCSV(object):
                 # add just earthquakes of Jan 2012
                 date_and_time = data[0].split(' ')
                 curr_date = date_and_time[0].split('-')
-                if True:#int(curr_date[1]) == 1:
-                    row=string.split(date);
-                    adate=row[0].split('-')
-                    atime=row[1].split(':')
-                    temp=atime[2].split('.')
-                    atime[2]=temp[0];
-        
-                    if atime[2]=='':
-                        atime[2]='00'
-                    t= time.mktime([int(adate[0]),int(adate[1]),int(adate[2]),int(atime[0]),int(atime[1]),int(atime[2]),0,0,0])
-                    
-                    if x > LatMax:
-                        LatMax=x
-                    if x< LatMin:
-                        LatMin=x
-                    if y > LonMax:
-                        LonMax=y
-                    if y< LonMin:
-                        LonMin=y
-                    if t< tMin:
-                        tMin=t
-                    
-                    # Insert floats into the point array
-                    all_data[year + "-points"].InsertNextPoint(x, y, z)
-                    all_data[year + "-scalar"].InsertNextValue(r)
-                    all_data[year + "-tid"].InsertNextValue(t)
-                        
+
+                row = string.split(date)
+                adate = row[0].split('-')
+                atime = row[1].split(':')
+                temp = atime[2].split('.')
+                atime[2] = temp[0]
+
+                if atime[2]=='':
+                    atime[2]='00'
+                t = time.mktime([int(adate[0]), int(adate[1]), int(adate[2]), int(atime[0]), int(atime[1]), int(atime[2]), 0, 0, 0])
+
+                if x > LatMax:
+                    LatMax = x
+                if x < LatMin:
+                    LatMin = x
+                if y > LonMax:
+                    LonMax = y
+                if y < LonMin:
+                    LonMin = y
+                if t < tMin:
+                    tMin = t
+
+                # Insert floats into the point array
+                all_data[year + "-points"].InsertNextPoint(x, y, z)
+                all_data[year + "-scalar"].InsertNextValue(r)
+                all_data[year + "-tid"].InsertNextValue(t)
+
     
             # read next line
             self.number = self.number + 1
@@ -102,27 +102,27 @@ class ReadPointsCSV(object):
     
         print LatMin, LatMax, LonMin, LonMax
         # Compute the range of the data
-        x1=self.distance(LatMin,LonMin,LatMax,LonMin)
-        x2=self.distance(LatMin,LonMax,LatMax,LonMax)
-        y1=self.distance(LatMin,LonMin,LatMin,LonMax)
-        y2=self.distance(LatMax,LonMin,LatMax,LonMax)
+        x1 = self.distance(LatMin,LonMin,LatMax,LonMin)
+        x2 = self.distance(LatMin,LonMax,LatMax,LonMax)
+        y1 = self.distance(LatMin,LonMin,LatMin,LonMax)
+        y2 = self.distance(LatMax,LonMin,LatMax,LonMax)
     
         for key in all_data.keys():
-            if key[:-5] == "points":
-                xx=x1
-                l=all_data[key].GetNumberOfPoints()
-                i=0
-                while i<l:
-                    x,y,z=all_data[key].GetPoint(i)
+            if key[-6:] == "points":
+                xx = x1
+                l = all_data[key].GetNumberOfPoints()
+                i = 0
+                while i < l:
+                    x, y, z = all_data[key].GetPoint(i)
                         
-                    u=(x-LatMin)/(LatMax-LatMin)
-                    x=(x-LatMin)/(LatMax-LatMin)*xx
+                    u = (x-LatMin)/(LatMax-LatMin)
+                    x = (x-LatMin)/(LatMax-LatMin)*xx
             
                     # Not perfect conversion...
-                    yy=(1-u)*y1+u*y2
-                    y=(y-LonMin)/(LonMax-LonMin)*yy
+                    yy = (1-u)*y1+u*y2
+                    y = (y-LonMin)/(LonMax-LonMin)*yy
                     all_data[key].SetPoint(i,x,y,z)
-                    i=i+1
+                    i = i+1
                     
                     
         return all_data 

@@ -59,9 +59,10 @@ data_dict = ReadPointsCSV().readPoints(filename)
 #points, scalars, tid = ReadPointsCSV().readPoints(filename) 
 
 #zeit = tid.getValue(0)
-points = data_dict["2014-points"]
-scalars = data_dict["2014-scalar"]
-tid = data_dict["2014-tid"]
+points = data_dict["2013-points"]
+scalars = data_dict["2013-scalar"]
+tid = data_dict["2013-tid"]
+
 data = vtk.vtkPolyData()
 data.SetPoints(points)
 data.GetPointData().SetScalars(scalars)
