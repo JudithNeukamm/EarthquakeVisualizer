@@ -1,7 +1,7 @@
 import vtk
 import time
-from ReadPointsCSV import ReadPointsCSV
-
+#from ReadPointsCSV import ReadPointsCSV
+from MyReader import ReadPointsCSV
 
 
 # Define a class for the keyboard interface
@@ -55,11 +55,17 @@ class KeyboardInterface(object):
 
 # Read the dataset 
 filename = "events3.csv"
-points, scalars, tid = ReadPointsCSV().readPoints(filename) 
+data_dict = ReadPointsCSV().readPoints(filename)
+#points, scalars, tid = ReadPointsCSV().readPoints(filename) 
 
+#zeit = tid.getValue(0)
+points = data_dict["2014-points"]
+scalars = data_dict["2014-scalar"]
+tid = data_dict["2014-tid"]
 data = vtk.vtkPolyData()
 data.SetPoints(points)
 data.GetPointData().SetScalars(scalars)
+
 
 '''
 # filter data after time
@@ -78,8 +84,9 @@ for i in range(0, points.GetNumberOfPoints()):
 # ... add color to each earthquake (point in dataset), depends on depth (z-value)
 colorTransferFunction = vtk.vtkColorTransferFunction()
 colorTransferFunction.AddRGBPoint(0.0, 0.0, 0.0, 1.0)
-colorTransferFunction.AddRGBPoint(5.0, 0.0, 1.0, 0.0)
-colorTransferFunction.AddRGBPoint(10.0, 1.0, 0.0, 0.0)
+colorTransferFunction.AddRGBPoint(4.0, 0.0, 1.0, 0.0)
+colorTransferFunction.AddRGBPoint(6.0, 1.0, 0.0, 0.0)
+colorTransferFunction.AddRGBPoint(8.0, 0.58, 0.44, 0.86)
 
 
 mapper = vtk.vtkPolyDataMapper()

@@ -33,7 +33,7 @@ class ReadPointsCSV(object):
         # Create arrays of Scalars
         scalars = vtk.vtkFloatArray()
         tid     = vtk.vtkFloatArray()
-    
+        
         # Initialize
         LatMax=0
         LatMin=360
