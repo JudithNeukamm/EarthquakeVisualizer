@@ -221,4 +221,15 @@ interactor.AddObserver("KeyPressEvent", keyboard_interface.keypress)
 # Initialize the interactor and start the rendering loop
 interactor.Initialize()
 render_window.Render()
+
+'''
+
+for frame in range(1,100,1):
+    isovalue = isovalue + 0.01
+    isosurface.SetValue(0,isovalue)
+    render_window.Render()
+    textActor.SetInput("%4.2f" %(isovalue))
+    tp.SetColor(lut.GetColor(isovalue))
+'''
+
 interactor.Start()
