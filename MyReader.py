@@ -56,18 +56,14 @@ class ReadPointsCSV(object):
                 #print data[0], data[1], data[2], data[3], data[4].split('--')[0]
                 date, x, y, z, r = data[0].rstrip(';'), float(data[1].rstrip(';')), float(data[2].rstrip(';')),  float(data[3].rstrip(';')), float(data[4].split('--')[0])
                 
-                # create one dataset for each year
-                year = date[:4]
-                if not all_data.has_key(year + "-points"):
-                    all_data[year + "-points"] = vtk.vtkPoints()
-                    all_data[year + "-scalar"] = vtk.vtkFloatArray()
-                    all_data[year + "-tid"] = vtk.vtkFloatArray()
+                # create one dataset for each month
+                month = date[:7]
+                if not all_data.has_key(month + "-points"):
+                    all_data[month + "-points"] = vtk.vtkPoints()
+                    all_data[month + "-scalar"] = vtk.vtkFloatArray()
+                    all_data[month + "-tid"] = vtk.vtkFloatArray()
                      
-                print data[0], data[1], data[2], data[3], data[4].split('--')[0]
-                
-                # add just earthquakes of Jan 2012
-                date_and_time = data[0].split(' ')
-                curr_date = date_and_time[0].split('-')
+                #print data[0], data[1], data[2], data[3], data[4].split('--')[0]
 
                 row = string.split(date)
                 adate = row[0].split('-')
@@ -91,9 +87,9 @@ class ReadPointsCSV(object):
                     tMin = t
 
                 # Insert floats into the point array
-                all_data[year + "-points"].InsertNextPoint(x, y, z)
-                all_data[year + "-scalar"].InsertNextValue(r)
-                all_data[year + "-tid"].InsertNextValue(t)
+                all_data[month + "-points"].InsertNextPoint(x, y, z)
+                all_data[month + "-scalar"].InsertNextValue(r)
+                all_data[month + "-tid"].InsertNextValue(t)
 
     
             # read next line
