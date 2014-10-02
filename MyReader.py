@@ -33,11 +33,11 @@ class ReadPointsCSV(object):
         all_data = {}
         
         # Initialize
-        LatMax=0
-        LatMin=360
-        LonMax=0
-        LonMin=360
-        tMin=99999999999999
+        LatMax = 0
+        LatMin = 360
+        LonMax = 0
+        LonMin = 360
+        tMin = 99999999999999
     
         # Open the file
         infile = open(inputfile)
@@ -53,22 +53,23 @@ class ReadPointsCSV(object):
             # Skip the commented lines
             if data and data[0][0] != '#':
                 # Convert data into float
-                #print data[0], data[1], data[2], data[3], data[4].split('--')[0]
+                # print data[0], data[1], data[2], data[3], data[4].split('--')[0]
                 date, x, y, z, r = data[0].rstrip(';'), float(data[1].rstrip(';')), float(data[2].rstrip(';')),  float(data[3].rstrip(';')), float(data[4].split('--')[0])
                 
                 # create one dataset for each month
+                # date string example: '2014-09-23 18:31:02.300'
                 year = date[:4]
-                #month = date[:7]
                 month = date[5:7]
                    
                 if not all_data.has_key(year):
                     all_data[year] = {}
-                if not all_data.get(year).has_key(month + "-points"):
-                    all_data.get(year)[month + "-points"] = vtk.vtkPoints()
-                    all_data.get(year)[month + "-scalar"] = vtk.vtkFloatArray()
-                    all_data.get(year)[month + "-tid"] = vtk.vtkFloatArray()
-                         
-                #print data[0], data[1], data[2], data[3], data[4].split('--')[0]
+
+                if not all_data.get(year).has_key(month):
+                    all_data.get(year)[month] = {
+                        'points': vtk.vtkPoints(),
+                        'scalar': vtk.vtkFloatArray(),
+                        'tid': vtk.vtkFloatArray()
+                    }
 
                 row = string.split(date)
                 adate = row[0].split('-')
@@ -76,8 +77,8 @@ class ReadPointsCSV(object):
                 temp = atime[2].split('.')
                 atime[2] = temp[0]
 
-                if atime[2]=='':
-                    atime[2]='00'
+                if atime[2] == '':
+                    atime[2] = '00'
                 t = time.mktime([int(adate[0]), int(adate[1]), int(adate[2]), int(atime[0]), int(atime[1]), int(atime[2]), 0, 0, 0])
 
                 if x > LatMax:
@@ -92,28 +93,30 @@ class ReadPointsCSV(object):
                     tMin = t
 
                 # Insert floats into the point array
-                all_data.get(year)[month + "-points"].InsertNextPoint(x, y, z)
-                all_data.get(year)[month + "-scalar"].InsertNextValue(r)
-                all_data.get(year)[month + "-tid"].InsertNextValue(t)
-
+                all_data.get(year)[month]['points'].InsertNextPoint(x, y, z)
+                all_data.get(year)[month]['scalar'].InsertNextValue(r)
+                all_data.get(year)[month]['tid'].InsertNextValue(t)
     
             # read next line
             line = infile.readline()
     
         print LatMin, LatMax, LonMin, LonMax
         # Compute the range of the data
-        x1 = self.distance(LatMin,LonMin,LatMax,LonMin)
-        x2 = self.distance(LatMin,LonMax,LatMax,LonMax)
-        y1 = self.distance(LatMin,LonMin,LatMin,LonMax)
-        y2 = self.distance(LatMax,LonMin,LatMax,LonMax)
+        x1 = self.distance(LatMin, LonMin, LatMax, LonMin)
+        x2 = self.distance(LatMin, LonMax, LatMax, LonMax)
+        y1 = self.distance(LatMin, LonMin, LatMin, LonMax)
+        y2 = self.distance(LatMax, LonMin, LatMax, LonMax)
     
-        for key in all_data.keys():
-            if key[-6:] == "points":
+        for everyYear in all_data:
+            for everyMonth in all_data[everyYear]:
+
+                points = all_data[everyYear][everyMonth]['points']
                 xx = x1
-                l = all_data[key].GetNumberOfPoints()
+                l = points.GetNumberOfPoints()
                 i = 0
+
                 while i < l:
-                    x, y, z = all_data[key].GetPoint(i)
+                    x, y, z = points.GetPoint(i)
                         
                     u = (x-LatMin)/(LatMax-LatMin)
                     x = (x-LatMin)/(LatMax-LatMin)*xx
@@ -121,10 +124,8 @@ class ReadPointsCSV(object):
                     # Not perfect conversion...
                     yy = (1-u)*y1+u*y2
                     y = (y-LonMin)/(LonMax-LonMin)*yy
-                    all_data[key].SetPoint(i,x,y,z)
-                    i = i+1
+                    points.SetPoint(i, x, y, z)
+                    i += 1
                     
                     
-        return all_data 
-            
-                
+        return all_data

@@ -56,12 +56,11 @@ class KeyboardInterface(object):
 # Read the dataset 
 filename = "events3.csv"
 data_dict = ReadPointsCSV().readPoints(filename)
-#points, scalars, tid = ReadPointsCSV().readPoints(filename) 
+data = vtk.vtkPolyData()
 
-points = data_dict["2013"]["09-points"]
-scalars =  data_dict["2013"]["09-scalar"]
-tid = data_dict["2013"]["09-tid"]
-
+points = data_dict["2013"]["09"]['points']
+scalars = data_dict["2013"]["09"]['scalar']
+tid = data_dict["2013"]["09"]["tid"]
 
 data = vtk.vtkPolyData()
 data.SetPoints(points)
@@ -173,11 +172,11 @@ axes.SetAxisLabelTextProperty(tprop)
 # create a text actor
 txt = vtk.vtkTextActor()
 txt.SetInput("Time: " + str(2.0)) 
-txtprop=txt.GetTextProperty()
+txtprop = txt.GetTextProperty()
 txtprop.SetFontFamilyToArial()
 txtprop.SetFontSize(18)
-txtprop.SetColor(1,1,1)
-txt.SetDisplayPosition(20,20)
+txtprop.SetColor(1, 1, 1)
+txt.SetDisplayPosition(20, 20)
 
 
 # Create a renderer and add the actors to it
@@ -186,8 +185,8 @@ renderer.SetBackground(0.2, 0.2, 0.2)
 
 
 
-# add the actors to rederer
-#renderer.AddViewProp(axes)
+# add the actors to renderer
+# renderer.AddViewProp(axes)
 renderer.AddActor(actor)
 renderer.AddActor(outlineActor)
 renderer.AddActor(ballActor)
@@ -225,27 +224,28 @@ interactor.AddObserver("KeyPressEvent", keyboard_interface.keypress)
 interactor.Initialize()
 render_window.Render()
 
-year = 2012
-month = 01
-for frame in range(1,30,1): # range 1 to 30, steps = 1
-    points = data_dict[str(year)]["0" + str(month) + "-points"]
-    scalars =  data_dict[str(year)]["0" + str(month) + "-scalar"]
-    tid = data_dict[str(year)]["0" + str(month) + "-tid"]
-    
-    data = vtk.vtkPolyData()
-    data.SetPoints(points)
-    data.GetPointData().SetScalars(scalars)
-    
-    ballGlyph.SetInput(data)
 
-    render_window.Render()
-    if month%9 == 0:
-        year = year+1
-        month = 01
-    else:
-        month = month + 1
-        
+######### Movie #########
+# going through every year and month and display data
+
+all_years_available = data_dict.keys()
+all_years_available.sort()
+for year in all_years_available:
+
+    all_months_available = data_dict[year].keys()
+    all_months_available.sort()
+    for month in all_months_available:
+        print "Movie is in " + year + "/" + month
+        points = data_dict[str(year)][str(month)]['points']
+        scalars = data_dict[str(year)][str(month)]['scalar']
+        tid = data_dict[str(year)][str(month)]['tid']
+
+        data = vtk.vtkPolyData()
+        data.SetPoints(points)
+        data.GetPointData().SetScalars(scalars)
     
+        ballGlyph.SetInput(data)
+        render_window.Render()
 
 
 interactor.Start()
