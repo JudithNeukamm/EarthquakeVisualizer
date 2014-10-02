@@ -58,9 +58,9 @@ filename = "events3.csv"
 data_dict = ReadPointsCSV().readPoints(filename)
 #points, scalars, tid = ReadPointsCSV().readPoints(filename) 
 
-points = data_dict["2013-10-points"]
-scalars =  data_dict["2013-10-scalar"]
-tid = data_dict["2013-10-tid"]
+points = data_dict["2013"]["09-points"]
+scalars =  data_dict["2013"]["09-scalar"]
+tid = data_dict["2013"]["09-tid"]
 
 
 data = vtk.vtkPolyData()

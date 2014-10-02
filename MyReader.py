@@ -57,12 +57,17 @@ class ReadPointsCSV(object):
                 date, x, y, z, r = data[0].rstrip(';'), float(data[1].rstrip(';')), float(data[2].rstrip(';')),  float(data[3].rstrip(';')), float(data[4].split('--')[0])
                 
                 # create one dataset for each month
-                month = date[:7]
-                if not all_data.has_key(month + "-points"):
-                    all_data[month + "-points"] = vtk.vtkPoints()
-                    all_data[month + "-scalar"] = vtk.vtkFloatArray()
-                    all_data[month + "-tid"] = vtk.vtkFloatArray()
-                     
+                year = date[:4]
+                #month = date[:7]
+                month = date[5:7]
+                   
+                if not all_data.has_key(year):
+                    all_data[year] = {}
+                if not all_data.get(year).has_key(month + "-points"):
+                    all_data.get(year)[month + "-points"] = vtk.vtkPoints()
+                    all_data.get(year)[month + "-scalar"] = vtk.vtkFloatArray()
+                    all_data.get(year)[month + "-tid"] = vtk.vtkFloatArray()
+                         
                 #print data[0], data[1], data[2], data[3], data[4].split('--')[0]
 
                 row = string.split(date)
@@ -87,13 +92,12 @@ class ReadPointsCSV(object):
                     tMin = t
 
                 # Insert floats into the point array
-                all_data[month + "-points"].InsertNextPoint(x, y, z)
-                all_data[month + "-scalar"].InsertNextValue(r)
-                all_data[month + "-tid"].InsertNextValue(t)
+                all_data.get(year)[month + "-points"].InsertNextPoint(x, y, z)
+                all_data.get(year)[month + "-scalar"].InsertNextValue(r)
+                all_data.get(year)[month + "-tid"].InsertNextValue(t)
 
     
             # read next line
-            self.number = self.number + 1
             line = infile.readline()
     
         print LatMin, LatMax, LonMin, LonMax
