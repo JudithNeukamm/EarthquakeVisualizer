@@ -124,8 +124,10 @@ ballActor.SetMapper(ballMapper)
 outline = vtk.vtkOutlineFilter()
 outline.SetInput(data) 
 
+
 outlineMapper = vtk.vtkPolyDataMapper()
 outlineMapper.SetInput(outline.GetOutput())
+
 
 outlineActor = vtk.vtkActor()
 outlineActor.SetMapper(outlineMapper)
@@ -223,14 +225,27 @@ interactor.AddObserver("KeyPressEvent", keyboard_interface.keypress)
 interactor.Initialize()
 render_window.Render()
 
-'''
+year = 2012
+month = 01
+for frame in range(1,30,1): # range 1 to 30, steps = 1
+    points = data_dict[str(year)]["0" + str(month) + "-points"]
+    scalars =  data_dict[str(year)]["0" + str(month) + "-scalar"]
+    tid = data_dict[str(year)]["0" + str(month) + "-tid"]
+    
+    data = vtk.vtkPolyData()
+    data.SetPoints(points)
+    data.GetPointData().SetScalars(scalars)
+    
+    ballGlyph.SetInput(data)
 
-for frame in range(1,100,1):
-    isovalue = isovalue + 0.01
-    isosurface.SetValue(0,isovalue)
     render_window.Render()
-    textActor.SetInput("%4.2f" %(isovalue))
-    tp.SetColor(lut.GetColor(isovalue))
-'''
+    if month%9 == 0:
+        year = year+1
+        month = 01
+    else:
+        month = month + 1
+        
+    
+
 
 interactor.Start()
