@@ -51,15 +51,18 @@ class MainWindow(QtGui.QMainWindow):
         button1.clicked.connect(self.onPlayMovieButtonClicked)
 
         # Initialize the interactor and start the rendering loop
-        self.render_window.Render()
+        self.do_renering()
 
         self.showMaximized()
         self.interactor.Initialize()
         self.interactor.Start()
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
+    def do_renering(self):
+         self.render_window.Render()
+
     def onPlayMovieButtonClicked(self, btn):
-        self.visualization.start_movie()
+        self.visualization.start_movie(self)
 
     def keyPressEvent(self, event):
         print "Test"

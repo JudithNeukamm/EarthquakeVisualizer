@@ -95,28 +95,15 @@ class EarthquakeVisualization:
         # create a text actor
         txt = vtk.vtkTextActor()
         txt.SetInput("Time: " + str(2.0))
-        txtprop = txt.GetTextProperty()
-        txtprop.SetFontFamilyToArial()
-        txtprop.SetFontSize(18)
-        txtprop.SetColor(1, 1, 1)
+        txt_prop = txt.GetTextProperty()
+        txt_prop.SetFontFamilyToArial()
+        txt_prop.SetFontSize(18)
+        txt_prop.SetColor(1, 1, 1)
         txt.SetDisplayPosition(20, 20)
         self.renderer.AddActor(txt)
 
-        '''
-        # filter data after time
-        data_filtered_according_time_slot = vtk.vtkPolyData()
-        for i in range(0, points.GetNumberOfPoints()):
-            date = time.asctime(time.localtime(tid[0][i]))
-            date_splitted = date.split(' ')
-            time = date_splitted[3]
-            time_splitted = time.split(':')
-            hour = int(time_splitted[0])
-            if 12 <= hour <= 13:
-                print time_splitted[0]
-        '''
-
-    def start_movie(self):
-        print "movie starts"
+    def start_movie(self, main_window):
+        print "EarthquakeVisualization.py: start_movie()"
         # going through every year and month and display data
 
         all_years_available = self.data_dict.keys()
@@ -126,6 +113,7 @@ class EarthquakeVisualization:
 
             all_months_available = self.data_dict[year].keys()
             all_months_available.sort()
+
             for month in all_months_available:
                 print "Movie is in " + year + "/" + month
                 points = self.data_dict[str(year)][str(month)]['points']
@@ -136,5 +124,4 @@ class EarthquakeVisualization:
                 self.data.GetPointData().SetScalars(scalars)
                 self.actors['glyph_actor'].set_data(self.data)
 
-                #self.filter.SetInput(self.data)
-                # render_window.Render() has to be called in main
+                main_window.render_window.Render()
