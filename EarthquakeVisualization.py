@@ -9,9 +9,9 @@ class EarthquakeVisualization:
 
     def __init__(self):
         self.data = vtk.vtkPolyData()
-        self.data_dict = None
+        self.data_dict = {}
         self.mapper = None
-        self.actors = []
+        self.actors = {}
         self.renderer = None
 
         # ... add color to each earthquake (point in dataset), depends on depth (z-value)
@@ -25,12 +25,11 @@ class EarthquakeVisualization:
 
     def init_reader(self):
         # Read the dataset
-        data_dict = ReadPointsCSV().readPoints("data/events3.csv")
+        self.data_dict = ReadPointsCSV().readPoints("data/events3.csv")
 
-        points = data_dict["2013"]["09"]['points']
-        scalars = data_dict["2013"]["09"]['scalar']
+        points = self.data_dict["2013"]["09"]['points']
+        scalars = self.data_dict["2013"]["09"]['scalar']
         # tid = data_dict["2013"]["09"]["tid"]
-
         self.data.SetPoints(points)
         self.data.GetPointData().SetScalars(scalars)
 
@@ -45,19 +44,19 @@ class EarthquakeVisualization:
         actor = vtk.vtkActor()
         actor.SetMapper(self.mapper)
         actor.GetProperty().SetPointSize(2)
-        self.actors.append(actor)
+        self.actors['visualization_actor'] = actor
 
         # add BallGlyphs with scalar bar
         ball_actor = EarthquakeBallGlyphActor(self.data)
         ball_actor.set_color_transfer_function(self.colorTransferFunction)
-        self.actors.append(ball_actor)
+        self.actors['glyph_actor'] = ball_actor
 
         scalar_bar_actor = ball_actor.get_scalar_bar()
-        self.actors.append(scalar_bar_actor)
+        self.actors['glyph_actor_scalar_bar'] = scalar_bar_actor
 
         # add outline
         outline_actor = EarthquakeOutlineActor(self.data)
-        self.actors.append(outline_actor)
+        self.actors['outline'] = outline_actor
 
     def init_renderer(self):
         # Create a renderer and add the actors to it
@@ -65,8 +64,8 @@ class EarthquakeVisualization:
         self.renderer.SetBackground(0.2, 0.2, 0.2)
 
         # add the actors to renderer
-        for actor in self.actors:
-            self.renderer.AddActor(actor)
+        for key in self.actors.keys():
+            self.renderer.AddActor(self.actors[key])
 
     def get_renderer(self):
         return self.renderer
@@ -78,9 +77,9 @@ class EarthquakeVisualization:
         self.init_renderer()
 
         # Create a text property for both cube axes
-        textProp = vtk.vtkTextProperty()
-        textProp.SetColor(1, 1, 1)
-        textProp.ShadowOn()
+        text_prop = vtk.vtkTextProperty()
+        text_prop.SetColor(1, 1, 1)
+        text_prop.ShadowOn()
 
         # Create a vtkCubeAxesActor2D. Use the outer edges of the bounding box to
         # draw the axes. Add the actor to the renderer.
@@ -90,8 +89,8 @@ class EarthquakeVisualization:
         axes.SetLabelFormat("%6.4g")
         axes.SetFlyModeToOuterEdges()
         axes.SetFontFactor(0.8)
-        axes.SetAxisTitleTextProperty(textProp)
-        axes.SetAxisLabelTextProperty(textProp)
+        axes.SetAxisTitleTextProperty(text_prop)
+        axes.SetAxisLabelTextProperty(text_prop)
 
         # create a text actor
         txt = vtk.vtkTextActor()
@@ -115,3 +114,27 @@ class EarthquakeVisualization:
             if 12 <= hour <= 13:
                 print time_splitted[0]
         '''
+
+    def start_movie(self):
+        print "movie starts"
+        # going through every year and month and display data
+
+        all_years_available = self.data_dict.keys()
+        all_years_available.sort()
+
+        for year in all_years_available:
+
+            all_months_available = self.data_dict[year].keys()
+            all_months_available.sort()
+            for month in all_months_available:
+                print "Movie is in " + year + "/" + month
+                points = self.data_dict[str(year)][str(month)]['points']
+                scalars = self.data_dict[str(year)][str(month)]['scalar']
+                #tid = self.data_dict[str(year)][str(month)]['tid']
+
+                self.data.SetPoints(points)
+                self.data.GetPointData().SetScalars(scalars)
+                self.actors['glyph_actor'].set_data(self.data)
+
+                #self.filter.SetInput(self.data)
+                # render_window.Render() has to be called in main

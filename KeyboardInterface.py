@@ -21,7 +21,10 @@ class KeyboardInterface(object):
         """This function captures keypress events and defines actions for
         keyboard shortcuts."""
         key = obj.GetKeySym()
-        if key == "9":
+        if key == "q":
+            print "q pressed"
+
+        elif key == "9":
             self.render_window.Render()
             self.window2image_filter.Modified()
             screenshot_filename = ("screenshot%02d.png" % self.screenshot_counter)

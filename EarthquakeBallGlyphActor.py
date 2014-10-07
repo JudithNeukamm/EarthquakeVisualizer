@@ -5,11 +5,12 @@ class EarthquakeBallGlyphActor(vtkActor):
 
     def __init__(self, data):
         self.source = None
+        self.data = data
         self.filter = None
         self.mapper = None
 
         self.init_source()
-        self.init_filter(data)
+        self.init_filter()
         self.init_mapper()
 
         self.SetMapper(self.mapper)
@@ -22,15 +23,15 @@ class EarthquakeBallGlyphActor(vtkActor):
         ball.SetPhiResolution(10)
         self.source = ball
 
-    def init_filter(self, data):
+    def init_filter(self):
         # filter that copies a geometric representation to every point in the dataset
-        ballGlyph = vtk.vtkGlyph3D()
-        ballGlyph.SetInput(data)
-        ballGlyph.SetSourceConnection(self.source.GetOutputPort())
-        ballGlyph.SetScaleModeToScaleByScalar()
-        ballGlyph.SetColorModeToColorByScalar()
-        ballGlyph.SetScaleFactor(3.0)
-        self.filter = ballGlyph
+        ball_glyph = vtk.vtkGlyph3D()
+        ball_glyph.SetInput(self.data)
+        ball_glyph.SetSourceConnection(self.source.GetOutputPort())
+        ball_glyph.SetScaleModeToScaleByScalar()
+        ball_glyph.SetColorModeToColorByScalar()
+        ball_glyph.SetScaleFactor(3.0)
+        self.filter = ball_glyph
 
     def init_mapper(self):
         self.mapper = vtk.vtkPolyDataMapper()
@@ -38,6 +39,10 @@ class EarthquakeBallGlyphActor(vtkActor):
 
     def set_color_transfer_function(self, color_transfer_function):
         self.mapper.SetLookupTable(color_transfer_function)
+
+    def set_data(self, data):
+        self.data = data
+        self.filter.SetInput(self.data)
 
     def get_scalar_bar(self):
          # create scalar bar
@@ -59,25 +64,3 @@ class EarthquakeBallGlyphActor(vtkActor):
         spc.SetValue(0.05, 0.05)
 
         return scalar_bar
-
-    def start_movie(self):
-        # going through every year and month and display data
-
-        all_years_available = self.data_dict.keys()
-        all_years_available.sort()
-
-        for year in all_years_available:
-
-            all_months_available = self.data_dict[year].keys()
-            all_months_available.sort()
-            for month in all_months_available:
-                print "Movie is in " + year + "/" + month
-                points = self.data_dict[str(year)][str(month)]['points']
-                scalars = self.data_dict[str(year)][str(month)]['scalar']
-                #tid = self.data_dict[str(year)][str(month)]['tid']
-
-                self.data.SetPoints(points)
-                self.data.GetPointData().SetScalars(scalars)
-
-                self.filter.SetInput(self.data)
-                # render_window.Render() has to be called in main
