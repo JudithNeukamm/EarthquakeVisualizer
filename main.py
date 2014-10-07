@@ -8,12 +8,12 @@ from EarthquakeVisualization import EarthquakeVisualization
 
 class MainWindow(QtGui.QMainWindow):
 
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.setWindowTitle("Scientific Visualization 2014")
 
         self.frame = QtGui.QFrame()
-        self.box_layout = QtGui.QVBoxLayout()
+        self.box_layout = QtGui.QHBoxLayout()
 
         menu_bar = QtGui.QMenuBar()
         self.box_layout.setMenuBar(menu_bar)
@@ -45,33 +45,51 @@ class MainWindow(QtGui.QMainWindow):
         # Connect the keyboard interface to the interactor
         self.interactor.AddObserver("KeyPressEvent", keyboard_interface.keypress)
 
-        # Button to play movie
-        button1 = QtGui.QPushButton("Play Movie")
-        self.box_layout.addWidget(button1)
-        button1.clicked.connect(self.onPlayMovieButtonClicked)
+        # Settings Widget
+        self.settings_widget = self.init_settings_widget()
+        self.box_layout.addWidget(self.settings_widget)
 
         # Initialize the interactor and start the rendering loop
-        self.do_renering()
+        self.render_window.Render()
 
         self.showMaximized()
         self.interactor.Initialize()
         self.interactor.Start()
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-    def do_renering(self):
-         self.render_window.Render()
+    def init_settings_widget(self):
+        settings_widget = QtGui.QWidget()
+        settings_widget.setMaximumWidth(200)
+        vbox = QtGui.QVBoxLayout()
+        vbox.setAlignment(QtCore.Qt.AlignTop)
+        settings_widget.setLayout(vbox)
+
+        # Movie Group
+        movie_group = QtGui.QGroupBox("Automatic Data Visualization")
+        movie_vbox = QtGui.QVBoxLayout()
+        movie_group.setLayout(movie_vbox)
+
+        # Button to play movie
+        button1 = QtGui.QPushButton("Play Movie")
+        movie_vbox.addWidget(button1)
+        button1.clicked.connect(self.onPlayMovieButtonClicked)
+
+        # Years Group
+        year_group = QtGui.QGroupBox("Manually Data Changes")
+        year_vbox = QtGui.QVBoxLayout()
+        year_group.setLayout(year_vbox)
+
+        # Slider to change years
+        year_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        year_vbox.addWidget(year_slider)
+
+        vbox.addWidget(movie_group)
+        vbox.addWidget(year_group)
+
+        return settings_widget
 
     def onPlayMovieButtonClicked(self, btn):
         self.visualization.start_movie(self)
-
-    def keyPressEvent(self, event):
-        print "Test"
-        if type(event) == QtGui.QKeyEvent:
-            #here accept the event and do something
-            print event.key()
-            event.accept()
-        else:
-            event.ignore()
 
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes |
