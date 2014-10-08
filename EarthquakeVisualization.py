@@ -90,6 +90,7 @@ class EarthquakeVisualization:
 
         # Map
         image_actor = EarthquakePlaneActor('map.jpg', self.reader.get_bounds())
+        image_actor.GetProperty().SetOpacity(0.5)
         self.actors['pic'] = image_actor
 
     def init_renderer(self):

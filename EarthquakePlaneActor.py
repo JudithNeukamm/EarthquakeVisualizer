@@ -25,7 +25,7 @@ class EarthquakePlaneActor(vtkActor):
 
     def init_mapper(self, bounds):
         plane = vtkPlaneSource()
-        plane.SetOrigin(bounds[0], bounds[2], bounds[4])  # 44.29 10 0
+        plane.SetOrigin(bounds[0], bounds[2], bounds[4])  # Xmin, Ymin, Zmin
         plane.SetPoint1(bounds[0], bounds[3], bounds[4])  # point x,y,z defining the first axis of the plane
         plane.SetPoint2(bounds[1], bounds[2], bounds[4])  # point x,y,z defining the second axis of the plane
 

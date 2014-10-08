@@ -17,8 +17,7 @@ class EarthquakeOutlineActor(vtkActor):
         self.init_source()
         self.init_mapper()
 
-        self.GetProperty().SetDiffuseColor(1, 0, 0)
-        #self.GetProperty().SetDiffuseColor(0.8, 0.8, 0.8)
+        self.GetProperty().SetDiffuseColor(0.701, 0.701, 0.701)  # Aluminium
         self.GetProperty().SetLineWidth(2.0)
 
     def init_source(self):
