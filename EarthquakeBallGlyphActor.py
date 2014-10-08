@@ -13,12 +13,10 @@ class EarthquakeBallGlyphActor(vtkActor):
         self.init_filter()
         self.init_mapper()
 
-        self.SetMapper(self.mapper)
-
     def init_source(self):
         # put spheres at each point in the dataset
         ball = vtk.vtkSphereSource()
-        ball.SetRadius(0.5)
+        ball.SetRadius(0.05) #0.5
         ball.SetThetaResolution(10)
         ball.SetPhiResolution(10)
         self.source = ball
@@ -30,12 +28,13 @@ class EarthquakeBallGlyphActor(vtkActor):
         ball_glyph.SetSourceConnection(self.source.GetOutputPort())
         ball_glyph.SetScaleModeToScaleByScalar()
         ball_glyph.SetColorModeToColorByScalar()
-        ball_glyph.SetScaleFactor(3.0)
+        ball_glyph.SetScaleFactor(1.0) # 3.0
         self.filter = ball_glyph
 
     def init_mapper(self):
         self.mapper = vtk.vtkPolyDataMapper()
         self.mapper.SetInputConnection(self.filter.GetOutputPort())
+        self.SetMapper(self.mapper)
 
     def set_color_transfer_function(self, color_transfer_function):
         self.mapper.SetLookupTable(color_transfer_function)

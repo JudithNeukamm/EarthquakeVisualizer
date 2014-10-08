@@ -3,30 +3,29 @@ from vtk import *
 
 class EarthquakeOutlineActor(vtkActor):
 
-    def __init__(self, xmin=0, xmax=0, ymin=0, ymax=0, zmin=0, zmax=0):
+    def __init__(self, boundTuple):
         self.mapper = None
         self.source = None
         
-        self.xmin = xmin
-        self.xmax = xmax
-        self.ymin = ymin
-        self.ymax = ymax
-        self.zmin = zmin
-        self.zmax = zmax
-        
+        self.xmin = boundTuple[0]
+        self.xmax = boundTuple[1]
+        self.ymin = boundTuple[2]
+        self.ymax = boundTuple[3]
+        self.zmin = boundTuple[4]
+        self.zmax = boundTuple[5]
+
+        self.init_source()
         self.init_mapper()
 
-        self.SetMapper(self.mapper)
-        self.GetProperty().SetDiffuseColor(0.8, 0.8, 0.8)
+        self.GetProperty().SetDiffuseColor(1, 0, 0)
+        #self.GetProperty().SetDiffuseColor(0.8, 0.8, 0.8)
         self.GetProperty().SetLineWidth(2.0)
- 
 
     def init_source(self):
         self.source = vtk.vtkOutlineSource()
-        self.source.SetBonds(self.xmin, self.xmax, self.ymin, self.ymax, self.zmin, self.zmax)
- 
+        self.source.SetBounds(self.xmin, self.xmax, self.ymin, self.ymax, self.zmin, self.zmax)
 
     def init_mapper(self):
         self.mapper = vtk.vtkPolyDataMapper()
-        self.mapper.SetInput(self.source)
-        
+        self.mapper.SetInput(self.source.GetOutput())
+        self.SetMapper(self.mapper)

@@ -7,13 +7,16 @@ class EarthquakePlaneActor(vtkImageActor):
         self.pic = file_name
         self.jpg_reader = None
         
-        self.init_mapReader()
-        
-        self.GetMapper().SetInputConnection(self.jpg_reader.GetOutputPort())
+        self.init_reader()
+        self.init_mapper()
 
-        
-        
-    def init_mapReader(self):
+    def set_bounds(self, bounds):
+        self.SetDisplayExtent(bounds)
+
+    def init_reader(self):
         jpg_reader = vtk.vtkJPEGReader()
         jpg_reader.SetFileName(self.pic)
-        self.jpg_reader = jpg_reader 
+        self.jpg_reader = jpg_reader
+
+    def init_mapper(self):
+        self.GetMapper().SetInputConnection(self.jpg_reader.GetOutputPort())
