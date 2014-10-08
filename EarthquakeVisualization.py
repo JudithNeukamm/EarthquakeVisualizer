@@ -3,7 +3,7 @@ from KeyboardInterface import KeyboardInterface
 from MyReader import ReadPointsCSV
 from EarthquakeOutlineActor import *
 from EarthquakeBallGlyphActor import *
-
+from EarthquakePlaneActor import *
 
 class EarthquakeVisualization:
 
@@ -57,6 +57,19 @@ class EarthquakeVisualization:
         # add outline
         outline_actor = EarthquakeOutlineActor(self.data)
         self.actors['outline'] = outline_actor
+        
+        
+        
+        
+        
+        #------------------------------------------------------------
+        
+        image_actor =  EarthquakePlaneActor('map.jpg');
+        self.actors['pic'] = image_actor
+            
+        #---------------------------------------------------------------------
+        
+
 
     def init_renderer(self):
         # Create a renderer and add the actors to it
@@ -80,17 +93,6 @@ class EarthquakeVisualization:
         text_prop = vtk.vtkTextProperty()
         text_prop.SetColor(1, 1, 1)
         text_prop.ShadowOn()
-
-        # Create a vtkCubeAxesActor2D. Use the outer edges of the bounding box to
-        # draw the axes. Add the actor to the renderer.
-        axes = vtk.vtkCubeAxesActor2D()
-        axes.SetInput(self.data)
-        #axes.SetCamera(renderer.GetActiveCamera())
-        axes.SetLabelFormat("%6.4g")
-        axes.SetFlyModeToOuterEdges()
-        axes.SetFontFactor(0.8)
-        axes.SetAxisTitleTextProperty(text_prop)
-        axes.SetAxisLabelTextProperty(text_prop)
 
         # create a text actor
         txt = vtk.vtkTextActor()
