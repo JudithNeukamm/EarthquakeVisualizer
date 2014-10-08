@@ -3,6 +3,7 @@ from EarthquakeDataReader import *
 from EarthquakeOutlineActor import *
 from EarthquakeBallGlyphActor import *
 from EarthquakePlaneActor import *
+import time
 
 
 class EarthquakeVisualization:
@@ -145,6 +146,7 @@ class EarthquakeVisualization:
         print "EarthquakeVisualization.py: start_movie()"
         # going through every year and month and display data
 
+
         all_years_available = self.data_dict.keys()
         all_years_available.sort()
 
@@ -163,3 +165,4 @@ class EarthquakeVisualization:
                 self.data.GetPointData().SetScalars(scalars)
                 self.actors['glyph_actor'].set_data(self.data)
                 main_window.render_window.Render()
+                time.sleep(2)
