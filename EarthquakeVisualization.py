@@ -89,8 +89,7 @@ class EarthquakeVisualization:
         self.actors['outline'] = outline_actor
 
         # Map
-        image_actor = EarthquakePlaneActor('map.jpg')
-        #image_actor.set_bounds(self.reader.get_bounds())
+        image_actor = EarthquakePlaneActor('map.jpg', self.reader.get_bounds())
         self.actors['pic'] = image_actor
 
     def init_renderer(self):
@@ -128,6 +127,13 @@ class EarthquakeVisualization:
         txt_prop.SetColor(1, 1, 1)
         txt.SetDisplayPosition(20, 20)
         self.renderer.AddActor(txt)
+
+        print "BOUNDS: "
+        for key in self.actors.keys():
+            bounds = self.actors[key].GetBounds()
+            print "Actor " + key + ": "
+            if bounds:
+                print str(bounds[0]) + "/" + str(bounds[1]) + ", " + str(bounds[2]) + "/" + str(bounds[3]) + "," + str(bounds[4]) + "/" + str(bounds[5])
 
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
