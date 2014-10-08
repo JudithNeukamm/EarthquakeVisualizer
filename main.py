@@ -27,6 +27,8 @@ class MainWindow(QtGui.QMainWindow):
         self.mds_slider = None
         self.mds_label = None
         self.current_mds_value = None
+        self.opacity_slider = None
+        self.opacity_value_label = None
 
         self.render_window = self.vtkWidget.GetRenderWindow()
         self.render_window.AddRenderer(self.visualization.get_renderer())
@@ -112,8 +114,37 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.mds_slider, QtCore.SIGNAL('valueChanged(int)'), self.on_slider_moved)
         self.connect(self.mds_slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
 
+
+        # ---------------------------------------------------
+        # Visualization Adjustments
+        # ---------------------------------------------------
+        vis_group = QtGui.QGroupBox("Visualization Adjustments")
+        vis_vbox = QtGui.QVBoxLayout()
+        vis_group.setLayout(vis_vbox)
+
+         # Opacity Label
+        opacity_label = QtGui.QLabel("Opacity of map")
+        vis_vbox.addWidget(opacity_label)
+
+        # Slider to change years
+        self.opacity_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        self.opacity_slider.setValue(100*self.visualization.get_map_opacity())
+        self.opacity_slider.setRange(0, 100)
+        self.opacity_slider.setTickPosition(QtGui.QSlider.TicksBelow)
+        vis_vbox.addWidget(self.opacity_slider)
+
+        # Current Value Label
+        self.opacity_value_label = QtGui.QLabel()
+        self.on_opacity_changed(100*self.visualization.get_map_opacity())
+        vis_vbox.addWidget(self.opacity_value_label)
+
+        # Slider events
+        self.connect(self.opacity_slider, QtCore.SIGNAL('valueChanged(int)'), self.on_opacity_changed)
+        self.connect(self.opacity_slider, QtCore.SIGNAL('sliderReleased()'), self.on_opacity_slider_released)
+
         vbox.addWidget(movie_group)
         vbox.addWidget(mds_group)
+        vbox.addWidget(vis_group)
 
         return settings_widget
 
@@ -130,6 +161,14 @@ class MainWindow(QtGui.QMainWindow):
         self.mds_label.setText("Current selection: %s" % data_selection)
 
         self.visualization.set_data_segment(data_selection)
+        self.render_window.Render()
+
+    def on_opacity_changed(self, value):
+        self.opacity_value_label.setText("Current opacity: %s" % int(value) + '%')
+        opacityFloat = float(value)/100
+        self.visualization.set_map_opacity(opacityFloat)
+
+    def on_opacity_slider_released(self):
         self.render_window.Render()
 
     def onPlayMovieButtonClicked(self, btn):

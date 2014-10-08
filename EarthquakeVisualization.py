@@ -25,6 +25,9 @@ class EarthquakeVisualization:
         self.colorTransferFunction.AddRGBPoint(6.0, 1.0, 0.0, 0.0)
         self.colorTransferFunction.AddRGBPoint(8.0, 0.58, 0.44, 0.86)
 
+        # Visualization Parameters
+        self.default_opacity = 0.5
+
         self.visualize()
 
     def init_reader(self):
@@ -90,8 +93,14 @@ class EarthquakeVisualization:
 
         # Map
         image_actor = EarthquakePlaneActor('map.jpg', self.reader.get_bounds())
-        image_actor.GetProperty().SetOpacity(0.5)
-        self.actors['pic'] = image_actor
+        image_actor.GetProperty().SetOpacity(self.default_opacity)
+        self.actors['map'] = image_actor
+
+    def get_map_opacity(self):
+        return self.actors['map'].GetProperty().GetOpacity()
+
+    def set_map_opacity(self, value):
+        self.actors['map'].GetProperty().SetOpacity(value)
 
     def init_renderer(self):
         # Create a renderer and add the actors to it
