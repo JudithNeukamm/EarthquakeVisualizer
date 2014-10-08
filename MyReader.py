@@ -7,11 +7,11 @@ import string
 import math
 import time
 
+
 class ReadPointsCSV(object):
     
     def __init__(self):
         self.number = 0
-        
         
     # Computes distance in Kilometers
     def distance(self, lat1, lon1, lat2, lon2):
@@ -55,7 +55,16 @@ class ReadPointsCSV(object):
                 # Convert data into float
                 # print data[0], data[1], data[2], data[3], data[4].split('--')[0]
                 date, x, y, z, r = data[0].rstrip(';'), float(data[1].rstrip(';')), float(data[2].rstrip(';')),  float(data[3].rstrip(';')), float(data[4].split('--')[0])
-                
+
+                # Range selection
+                # @see: http://www.zhang-liu.com/misl/map.html
+                # Latitude (x): from south(deg) 44.3 - north(deg) 45.5
+                # Longitude (y): from west(deg) 10.0 - east(deg) 12
+                if x < 44.3 or x > 45.5 or y < 10 or y > 12:
+                    # read next line
+                    line = infile.readline()
+                    continue
+
                 # create one dataset for each month
                 # date string example: '2014-09-23 18:31:02.300'
                 year = date[:4]
@@ -126,6 +135,5 @@ class ReadPointsCSV(object):
                     y = (y-LonMin)/(LonMax-LonMin)*yy
                     points.SetPoint(i, x, y, z)
                     i += 1
-                    
-                    
+
         return all_data
