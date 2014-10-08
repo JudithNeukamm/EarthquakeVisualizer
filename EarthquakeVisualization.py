@@ -1,16 +1,19 @@
 import vtk
 from KeyboardInterface import KeyboardInterface
-from MyReader import ReadPointsCSV
+from EarthquakeDataReader import *
 from EarthquakeOutlineActor import *
 from EarthquakeBallGlyphActor import *
 from EarthquakePlaneActor import *
 
+
 class EarthquakeVisualization:
 
     def __init__(self):
+        self.reader = None
         self.data = vtk.vtkPolyData()
         self.data_dict = {}
         self.data_segments = []
+
         self.mapper = None
         self.actors = {}
         self.renderer = None
@@ -26,13 +29,8 @@ class EarthquakeVisualization:
 
     def init_reader(self):
         # Read the dataset
-        self.data_dict = ReadPointsCSV().readPoints("data/events3.csv")
-
-        points = self.data_dict["2013"]["09"]['points']
-        scalars = self.data_dict["2013"]["09"]['scalar']
-        # tid = data_dict["2013"]["09"]["tid"]
-        self.data.SetPoints(points)
-        self.data.GetPointData().SetScalars(scalars)
+        self.reader = EarthquakeDataReader()
+        self.data_dict = self.reader.readPoints("data/events3.csv")
 
     def get_data_segments(self):
         if len(self.data_segments):
@@ -72,13 +70,13 @@ class EarthquakeVisualization:
 
     def init_actors(self):
 
-        # add visualization actor
+        # Visualization actor
         actor = vtk.vtkActor()
         actor.SetMapper(self.mapper)
         actor.GetProperty().SetPointSize(2)
         self.actors['visualization_actor'] = actor
 
-        # add BallGlyphs with scalar bar
+        # BallGlyphs with scalar bar
         ball_actor = EarthquakeBallGlyphActor(self.data)
         ball_actor.set_color_transfer_function(self.colorTransferFunction)
         self.actors['glyph_actor'] = ball_actor
@@ -86,22 +84,14 @@ class EarthquakeVisualization:
         scalar_bar_actor = ball_actor.get_scalar_bar()
         self.actors['glyph_actor_scalar_bar'] = scalar_bar_actor
 
-        # add outline
-        outline_actor = EarthquakeOutlineActor(self.data)
+        # Outline
+        outline_actor = EarthquakeOutlineActor(self.reader.get_bounds())
         self.actors['outline'] = outline_actor
-        
-        
-        
-        
-        
-        #------------------------------------------------------------
-        
-        image_actor =  EarthquakePlaneActor('map.jpg');
-        self.actors['pic'] = image_actor
-            
-        #---------------------------------------------------------------------
-        
 
+        # Map
+        image_actor = EarthquakePlaneActor('map.jpg', self.reader.get_bounds())
+        image_actor.GetProperty().SetOpacity(0.5)
+        self.actors['pic'] = image_actor
 
     def init_renderer(self):
         # Create a renderer and add the actors to it
@@ -121,6 +111,9 @@ class EarthquakeVisualization:
         self.init_actors()
         self.init_renderer()
 
+        # lets start with this sample
+        self.set_data_segment("09/2013")
+
         # Create a text property for both cube axes
         text_prop = vtk.vtkTextProperty()
         text_prop.SetColor(1, 1, 1)
@@ -135,6 +128,13 @@ class EarthquakeVisualization:
         txt_prop.SetColor(1, 1, 1)
         txt.SetDisplayPosition(20, 20)
         self.renderer.AddActor(txt)
+
+        print "BOUNDS: "
+        for key in self.actors.keys():
+            bounds = self.actors[key].GetBounds()
+            print "Actor " + key + ": "
+            if bounds:
+                print str(bounds[0]) + "/" + str(bounds[1]) + ", " + str(bounds[2]) + "/" + str(bounds[3]) + "," + str(bounds[4]) + "/" + str(bounds[5])
 
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
