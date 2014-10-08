@@ -51,11 +51,11 @@ class EarthquakeBallGlyphActor(vtkActor):
 
         # set properties ...
         scalar_bar.SetTitle("Strength")
-        scalar_bar.GetLabelTextProperty().SetColor(0, 0, 1)
-        scalar_bar.GetTitleTextProperty().SetColor(0, 0, 1)
+        scalar_bar.GetLabelTextProperty().SetColor(0.701, 0.701, 0.701)  # Aluminium
+        scalar_bar.GetTitleTextProperty().SetColor(0.701, 0.701, 0.701)
 
         # ...and size
-        scalar_bar.SetWidth(.12)
+        scalar_bar.SetWidth(0.1)
         scalar_bar.SetHeight(.95)
 
         # ... and position

@@ -74,14 +74,42 @@ class MainWindow(QtGui.QMainWindow):
         movie_vbox.addWidget(button1)
         button1.clicked.connect(self.onPlayMovieButtonClicked)
 
-        # Years Group
+        # ---------------------------------------------------
+        # Manually Data Changes
+        # ---------------------------------------------------
+
         year_group = QtGui.QGroupBox("Manually Data Changes")
         year_vbox = QtGui.QVBoxLayout()
         year_group.setLayout(year_vbox)
 
+        # Year Label
+        year_label = QtGui.QLabel("Year")
+        year_vbox.addWidget(year_label)
+
         # Slider to change years
         year_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        current_year = 2014
+        year_slider.setValue(current_year)
+        year_slider.setMinimum(2011)
+        year_slider.setMaximum(2014)
+        year_slider.setTickInterval(1)
+        year_slider.setSingleStep(1)
+        year_slider.setTickPosition(QtGui.QSlider.TicksBelow)
         year_vbox.addWidget(year_slider)
+        #year_slider.connect(year_slider, QtCore.SIGNAL('sliderReleased()'), current_year)
+
+        # Month Label
+        month_label = QtGui.QLabel("Month")
+        year_vbox.addWidget(month_label)
+
+        # Slider
+        month_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        month_slider.setMinimum(01)
+        month_slider.setMaximum(12)
+        month_slider.setTickInterval(1)
+        month_slider.setSingleStep(1)
+        month_slider.setTickPosition(QtGui.QSlider.TicksBelow)
+        year_vbox.addWidget(month_slider)
 
         vbox.addWidget(movie_group)
         vbox.addWidget(year_group)
