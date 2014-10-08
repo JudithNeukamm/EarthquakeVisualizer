@@ -1,5 +1,4 @@
 import vtk
-from KeyboardInterface import KeyboardInterface
 from EarthquakeDataReader import *
 from EarthquakeOutlineActor import *
 from EarthquakeBallGlyphActor import *
@@ -13,6 +12,7 @@ class EarthquakeVisualization:
         self.data = vtk.vtkPolyData()
         self.data_dict = {}
         self.data_segments = []
+        self.first_data_segment = None
 
         self.mapper = None
         self.actors = {}
@@ -31,9 +31,22 @@ class EarthquakeVisualization:
         self.visualize()
 
     def init_reader(self):
+        # only read data points if it gets called again
+        if self.reader is None:
+            self.reader = EarthquakeDataReader()
+
         # Read the dataset
-        self.reader = EarthquakeDataReader()
-        self.data_dict = self.reader.readPoints("data/events3.csv")
+        self.data_dict = self.reader.read_points("data/events3.csv")
+        self.data_segments = []
+
+    def get_strength_range(self):
+        return self.reader.get_strength_range()
+
+    def set_strength_range(self, min, max):
+        self.reader.set_strength_filter(min, max)
+
+        # re-read data with new filter
+        self.visualize()
 
     def get_data_segments(self):
         if len(self.data_segments):
@@ -51,6 +64,7 @@ class EarthquakeVisualization:
                 for month in all_months_available:
                     segments.append(month+"/"+year)
 
+            self.first_data_segment = segments[0]
             self.data_segments = segments
             return self.data_segments
 
@@ -67,9 +81,12 @@ class EarthquakeVisualization:
         self.actors['glyph_actor'].set_data(self.data)
 
     def init_mapper(self):
-        self.mapper = vtk.vtkPolyDataMapper()
+        # only update data if there is an instance of the mapper
+        if self.mapper is None:
+            self.mapper = vtk.vtkPolyDataMapper()
+            self.mapper.SetLookupTable(self.colorTransferFunction)
+
         self.mapper.SetInput(self.data)
-        self.mapper.SetLookupTable(self.colorTransferFunction)
 
     def init_actors(self):
 
@@ -121,29 +138,8 @@ class EarthquakeVisualization:
         self.init_renderer()
 
         # lets start with this sample
-        self.set_data_segment("09/2013")
-
-        # Create a text property for both cube axes
-        text_prop = vtk.vtkTextProperty()
-        text_prop.SetColor(1, 1, 1)
-        text_prop.ShadowOn()
-
-        # create a text actor
-        txt = vtk.vtkTextActor()
-        txt.SetInput("Time: " + str(2.0))
-        txt_prop = txt.GetTextProperty()
-        txt_prop.SetFontFamilyToArial()
-        txt_prop.SetFontSize(18)
-        txt_prop.SetColor(1, 1, 1)
-        txt.SetDisplayPosition(20, 20)
-        self.renderer.AddActor(txt)
-
-        print "BOUNDS: "
-        for key in self.actors.keys():
-            bounds = self.actors[key].GetBounds()
-            print "Actor " + key + ": "
-            if bounds:
-                print str(bounds[0]) + "/" + str(bounds[1]) + ", " + str(bounds[2]) + "/" + str(bounds[3]) + "," + str(bounds[4]) + "/" + str(bounds[5])
+        self.get_data_segments()  # call it to create the segments
+        self.set_data_segment(self.first_data_segment)
 
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
