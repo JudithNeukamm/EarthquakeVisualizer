@@ -45,7 +45,7 @@ class EarthquakeBallGlyphActor(vtkActor):
         self.filter.SetInput(self.data)
 
     def get_scalar_bar(self):
-         # create scalar bar
+        # create scalar bar
         scalar_bar = vtk.vtkScalarBarActor()
         scalar_bar.SetLookupTable(self.mapper.GetLookupTable())
 
