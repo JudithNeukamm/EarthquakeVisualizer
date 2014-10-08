@@ -4,7 +4,7 @@ from EarthquakeDataReader import *
 from EarthquakeOutlineActor import *
 from EarthquakeBallGlyphActor import *
 from EarthquakePlaneActor import *
-
+import time
 
 class EarthquakeVisualization:
 
@@ -128,15 +128,6 @@ class EarthquakeVisualization:
         text_prop.SetColor(1, 1, 1)
         text_prop.ShadowOn()
 
-        # create a text actor
-        txt = vtk.vtkTextActor()
-        txt.SetInput("Time: " + str(2.0))
-        txt_prop = txt.GetTextProperty()
-        txt_prop.SetFontFamilyToArial()
-        txt_prop.SetFontSize(18)
-        txt_prop.SetColor(1, 1, 1)
-        txt.SetDisplayPosition(20, 20)
-        self.renderer.AddActor(txt)
 
         print "BOUNDS: "
         for key in self.actors.keys():
@@ -148,6 +139,7 @@ class EarthquakeVisualization:
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
         # going through every year and month and display data
+
 
         all_years_available = self.data_dict.keys()
         all_years_available.sort()
@@ -167,3 +159,4 @@ class EarthquakeVisualization:
                 self.data.GetPointData().SetScalars(scalars)
                 self.actors['glyph_actor'].set_data(self.data)
                 main_window.render_window.Render()
+                time.sleep(2)
