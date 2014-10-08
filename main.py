@@ -21,7 +21,13 @@ class MainWindow(QtGui.QMainWindow):
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.box_layout.addWidget(self.vtkWidget)
 
+        # Visualization
         self.visualization = EarthquakeVisualization()
+        self.slider_data_array = self.visualization.get_data_segments()
+        self.mds_slider = None
+        self.mds_label = None
+        self.current_mds_value = None
+
         self.render_window = self.vtkWidget.GetRenderWindow()
         self.render_window.AddRenderer(self.visualization.get_renderer())
         self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
@@ -59,7 +65,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def init_settings_widget(self):
         settings_widget = QtGui.QWidget()
-        settings_widget.setMaximumWidth(200)
+        settings_widget.setMaximumWidth(300)
         vbox = QtGui.QVBoxLayout()
         vbox.setAlignment(QtCore.Qt.AlignTop)
         settings_widget.setLayout(vbox)
@@ -75,46 +81,56 @@ class MainWindow(QtGui.QMainWindow):
         button1.clicked.connect(self.onPlayMovieButtonClicked)
 
         # ---------------------------------------------------
-        # Manually Data Changes
+        # Manually Data Selection = mds
         # ---------------------------------------------------
 
-        year_group = QtGui.QGroupBox("Manually Data Changes")
-        year_vbox = QtGui.QVBoxLayout()
-        year_group.setLayout(year_vbox)
+        mds_group = QtGui.QGroupBox("Manually Data Changes")
+        mds_vbox = QtGui.QVBoxLayout()
+        mds_group.setLayout(mds_vbox)
 
         # Year Label
-        year_label = QtGui.QLabel("Year")
-        year_vbox.addWidget(year_label)
+        mds_label = QtGui.QLabel("Selecting data by time")
+        mds_vbox.addWidget(mds_label)
 
         # Slider to change years
-        year_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        current_year = 2014
-        year_slider.setValue(current_year)
-        year_slider.setMinimum(2011)
-        year_slider.setMaximum(2014)
-        year_slider.setTickInterval(1)
-        year_slider.setSingleStep(1)
-        year_slider.setTickPosition(QtGui.QSlider.TicksBelow)
-        year_vbox.addWidget(year_slider)
-        #year_slider.connect(year_slider, QtCore.SIGNAL('sliderReleased()'), current_year)
+        self.mds_slider = QtGui.QSlider(QtCore.Qt.Vertical, self)
+        self.current_mds_value = 0
+        self.mds_slider.setValue(self.current_mds_value)
+        self.mds_slider.setMinimum(0)
+        self.mds_slider.setMaximum(len(self.slider_data_array)-1)
+        self.mds_slider.setTickInterval(1)
+        self.mds_slider.setSingleStep(1)
+        self.mds_slider.setTickPosition(QtGui.QSlider.TicksRight)
+        mds_vbox.addWidget(self.mds_slider)
 
-        # Month Label
-        month_label = QtGui.QLabel("Month")
-        year_vbox.addWidget(month_label)
+        # Current Value Label
+        self.mds_label = QtGui.QLabel()
+        self.on_slider_released()
+        mds_vbox.addWidget(self.mds_label)
 
-        # Slider
-        month_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        month_slider.setMinimum(01)
-        month_slider.setMaximum(12)
-        month_slider.setTickInterval(1)
-        month_slider.setSingleStep(1)
-        month_slider.setTickPosition(QtGui.QSlider.TicksBelow)
-        year_vbox.addWidget(month_slider)
+        # Slider events
+        self.connect(self.mds_slider, QtCore.SIGNAL('valueChanged(int)'), self.on_slider_moved)
+        self.connect(self.mds_slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
 
         vbox.addWidget(movie_group)
-        vbox.addWidget(year_group)
+        vbox.addWidget(mds_group)
 
         return settings_widget
+
+    def on_slider_moved(self, value):
+        data_selection = self.slider_data_array[value]
+        self.mds_label.setText("Current selection: %s" % data_selection)
+
+        self.visualization.set_data_segment(data_selection)
+        self.render_window.Render()
+
+    def on_slider_released(self):
+        self.current_mds_value = self.mds_slider.value()
+        data_selection = self.slider_data_array[self.current_mds_value]
+        self.mds_label.setText("Current selection: %s" % data_selection)
+
+        self.visualization.set_data_segment(data_selection)
+        self.render_window.Render()
 
     def onPlayMovieButtonClicked(self, btn):
         self.visualization.start_movie(self)
@@ -130,9 +146,6 @@ class MainWindow(QtGui.QMainWindow):
 
 
 if __name__ == "__main__":
-
     app = QtGui.QApplication(sys.argv)
-
     window = MainWindow()
-
     sys.exit(app.exec_())

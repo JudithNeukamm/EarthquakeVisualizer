@@ -10,6 +10,7 @@ class EarthquakeVisualization:
     def __init__(self):
         self.data = vtk.vtkPolyData()
         self.data_dict = {}
+        self.data_segments = []
         self.mapper = None
         self.actors = {}
         self.renderer = None
@@ -32,6 +33,37 @@ class EarthquakeVisualization:
         # tid = data_dict["2013"]["09"]["tid"]
         self.data.SetPoints(points)
         self.data.GetPointData().SetScalars(scalars)
+
+    def get_data_segments(self):
+        if len(self.data_segments):
+            return self.data_segments
+        else:
+            segments = []
+            all_years_available = self.data_dict.keys()
+            all_years_available.sort()
+
+            for year in all_years_available:
+
+                all_months_available = self.data_dict[year].keys()
+                all_months_available.sort()
+
+                for month in all_months_available:
+                    segments.append(month+"/"+year)
+
+            self.data_segments = segments
+            return self.data_segments
+
+    def set_data_segment(self, segment_string):
+        # Data segment interpretation
+        month = segment_string[:2]
+        year = segment_string[3:7]
+
+        # Update data segment
+        self.data.SetPoints(self.data_dict[year][month]['points'])
+        self.data.GetPointData().SetScalars(self.data_dict[year][month]['scalar'])
+
+        # Update visualization
+        self.actors['glyph_actor'].set_data(self.data)
 
     def init_mapper(self):
         self.mapper = vtk.vtkPolyDataMapper()
@@ -123,5 +155,4 @@ class EarthquakeVisualization:
                 self.data.SetPoints(points)
                 self.data.GetPointData().SetScalars(scalars)
                 self.actors['glyph_actor'].set_data(self.data)
-
                 main_window.render_window.Render()
