@@ -21,9 +21,9 @@ class EarthquakeDataReader(object):
     StrengthMin = 0
     StrengthMax = 10
 
-    def set_strength_filter(self, min, max):
-        self.StrengthMin = min
-        self.StrengthMax = max
+    def set_strength_filter(self, min_strength, max_strength):
+        self.StrengthMin = min_strength
+        self.StrengthMax = max_strength
 
     def get_strength_range(self):
         return self.StrengthMin, self.StrengthMax

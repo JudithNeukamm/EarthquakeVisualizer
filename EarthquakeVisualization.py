@@ -43,8 +43,8 @@ class EarthquakeVisualization:
     def get_strength_range(self):
         return self.reader.get_strength_range()
 
-    def set_strength_range(self, min, max):
-        self.reader.set_strength_filter(min, max)
+    def set_strength_range(self, min_strength, max_strength):
+        self.reader.set_strength_filter(min_strength, max_strength)
 
         # re-read data with new filter
         self.visualize()
