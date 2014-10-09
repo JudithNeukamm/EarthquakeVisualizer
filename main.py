@@ -16,9 +16,6 @@ class MainWindow(QtGui.QMainWindow):
         self.box_layout = QtGui.QHBoxLayout()
         self.root_layout.addLayout(self.box_layout)
 
-        #menu_bar = QtGui.QMenuBar()
-        #self.box_layout.setMenuBar(menu_bar)
-
         self.frame = QtGui.QFrame()
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.box_layout.addWidget(self.vtkWidget)
@@ -34,10 +31,11 @@ class MainWindow(QtGui.QMainWindow):
         self.opacity_slider = None
         self.opacity_value_label = None
 
+        # Renderer
         self.render_window = self.vtkWidget.GetRenderWindow()
         self.render_window.AddRenderer(self.visualization.get_renderer())
-        self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
 
+        self.interactor = self.vtkWidget.GetRenderWindow().GetInteractor()
         self.frame.setLayout(self.root_layout)
         self.setCentralWidget(self.frame)
 
@@ -49,7 +47,7 @@ class MainWindow(QtGui.QMainWindow):
         self.bottom_widget = self.init_bottom_widget()
         self.root_layout.addWidget(self.bottom_widget)
 
-        # Initialize the interactor and start the rendering loop
+        # start the rendering loop
         self.render_window.Render()
 
         self.showMaximized()
@@ -99,6 +97,11 @@ class MainWindow(QtGui.QMainWindow):
         vbox.addWidget(mds_group)
 
         return bottom_widget
+
+    def update_renderer(self):
+        self.render_window = self.vtkWidget.GetRenderWindow()
+        self.render_window.AddRenderer(self.visualization.get_renderer())
+        self.render_window.Render()
 
     def init_settings_widget(self):
         settings_widget = QtGui.QWidget()
@@ -162,7 +165,7 @@ class MainWindow(QtGui.QMainWindow):
         opacity_label = QtGui.QLabel("Opacity of map")
         vis_vbox.addWidget(opacity_label)
 
-        # Slider to change opcaity
+        # Slider to change opacity
         self.opacity_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         self.opacity_slider.setValue(100*self.visualization.get_map_opacity())
         self.opacity_slider.setRange(0, 100)
@@ -212,7 +215,7 @@ class MainWindow(QtGui.QMainWindow):
         self.visualization.set_map_opacity(opacityFloat)
 
     def on_opacity_slider_released(self):
-        self.render_window.Render()
+        self.update_renderer()
 
     def onPlayMovieButtonClicked(self, btn):
         self.visualization.start_movie(self)
@@ -221,13 +224,12 @@ class MainWindow(QtGui.QMainWindow):
         min_strength = self.strength_min_box.value()
         max_strength = self.strength_max_box.value()
         print "Set strength filter to " + str(min_strength) + "/" + str(max_strength)
-        #self.visualization.set_strength_range(min_strength, max_strength)
+        self.visualization.set_strength_range(min_strength, max_strength)
+        self.update_renderer()
 
         # update data slider as well because data might not be available anymore
-        #self.slider_data_array = self.visualization.get_data_segments()
-        #self.mds_slider.setMaximum(len(self.slider_data_array)-1)
-
-
+        self.slider_data_array = self.visualization.get_data_segments()
+        self.mds_slider.setMaximum(len(self.slider_data_array)-1)
 
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes |

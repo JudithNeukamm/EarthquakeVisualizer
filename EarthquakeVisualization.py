@@ -38,12 +38,13 @@ class EarthquakeVisualization:
 
         # Read the dataset
         self.data_dict = self.reader.read_points("data/events3.csv")
-        self.data_segments = []
+        self.data_segments[:] = []
 
     def get_strength_range(self):
         return self.reader.get_strength_range()
 
     def set_strength_range(self, min_strength, max_strength):
+        # update reader with strength conditions
         self.reader.set_strength_filter(min_strength, max_strength)
 
         # re-read data with new filter
@@ -90,29 +91,35 @@ class EarthquakeVisualization:
         self.mapper.SetInput(self.data)
 
     def init_actors(self):
+        # Visualization actor that is independent from the selected data
+        if 'visualization_actor' not in self.actors.keys():
+            actor = vtk.vtkActor()
+            actor.SetMapper(self.mapper)
+            actor.GetProperty().SetPointSize(2)
+            self.actors['visualization_actor'] = actor
 
-        # Visualization actor
-        actor = vtk.vtkActor()
-        actor.SetMapper(self.mapper)
-        actor.GetProperty().SetPointSize(2)
-        self.actors['visualization_actor'] = actor
+        # BallGlyphs with scalar bar that depends on the selected data
+        if 'glyph_actor' not in self.actors.keys():
+            ball_actor = EarthquakeBallGlyphActor(self.data)
+            ball_actor.set_color_transfer_function(self.colorTransferFunction)
+            self.actors['glyph_actor'] = ball_actor
 
-        # BallGlyphs with scalar bar
-        ball_actor = EarthquakeBallGlyphActor(self.data)
-        ball_actor.set_color_transfer_function(self.colorTransferFunction)
-        self.actors['glyph_actor'] = ball_actor
+            scalar_bar_actor = ball_actor.get_scalar_bar()
+            self.actors['glyph_actor_scalar_bar'] = scalar_bar_actor
 
-        scalar_bar_actor = ball_actor.get_scalar_bar()
-        self.actors['glyph_actor_scalar_bar'] = scalar_bar_actor
+        else:  # just update data of ball glyphs
+            self.actors['glyph_actor'].set_data(self.data)
 
-        # Outline
-        outline_actor = EarthquakeOutlineActor(self.reader.get_bounds())
-        self.actors['outline'] = outline_actor
+        # Outline that is independent from the selected data
+        if 'outline' not in self.actors.keys():
+            outline_actor = EarthquakeOutlineActor(self.reader.get_bounds())
+            self.actors['outline'] = outline_actor
 
-        # Map
-        image_actor = EarthquakePlaneActor('images/map.jpg', self.reader.get_bounds())
-        image_actor.GetProperty().SetOpacity(self.default_opacity)
-        self.actors['map'] = image_actor
+        # Map that is also independent from the selected data
+        if 'map' not in self.actors.keys():
+            image_actor = EarthquakePlaneActor('images/map.jpg', self.reader.get_bounds())
+            image_actor.GetProperty().SetOpacity(self.default_opacity)
+            self.actors['map'] = image_actor
 
     def get_map_opacity(self):
         return self.actors['map'].GetProperty().GetOpacity()
@@ -121,7 +128,7 @@ class EarthquakeVisualization:
         self.actors['map'].GetProperty().SetOpacity(value)
 
     def init_renderer(self):
-        # Create a renderer and add the actors to it
+        # create a renderer and add the actors to it
         self.renderer = vtk.vtkRenderer()
         self.renderer.SetBackground(0.2, 0.2, 0.2)
 
