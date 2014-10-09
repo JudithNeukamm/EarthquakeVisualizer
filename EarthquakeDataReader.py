@@ -75,16 +75,16 @@ class EarthquakeDataReader(object):
                 year = date[:4]
                 month = date[5:7]
 
-                # create a containers for every month of a given year
+                # create a containers for the given year and for the given month
                 if not all_data.has_key(year):
                     all_data[year] = {}
 
-                    for month in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']:
-                        all_data.get(year)[month] = {
-                            'points': vtk.vtkPoints(),
-                            'scalar': vtk.vtkFloatArray(),
-                            'tid': vtk.vtkFloatArray()
-                        }
+                if not all_data.get(year).has_key(month):
+                    all_data.get(year)[month] = {
+                        'points': vtk.vtkPoints(),
+                        'scalar': vtk.vtkFloatArray(),
+                        'tid': vtk.vtkFloatArray()
+                    }
 
                 row = string.split(date)
                 adate = row[0].split('-')
