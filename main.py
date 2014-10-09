@@ -2,7 +2,6 @@ import os, sys
 import vtk
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from KeyboardInterface import KeyboardInterface
 from EarthquakeVisualization import EarthquakeVisualization
 
 
