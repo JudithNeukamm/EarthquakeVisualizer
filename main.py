@@ -133,16 +133,16 @@ class MainWindow(QtGui.QMainWindow):
         strength_group.setLayout(strength_vbox)
 
         spinbox_layout = QtGui.QHBoxLayout()
-        min, max = self.visualization.get_strength_range()
+        min_strength, max_strength = self.visualization.get_strength_range()
 
         self.strength_min_box = QtGui.QDoubleSpinBox(self)
         self.strength_min_box.setRange(0.00, 10.00)
-        self.strength_min_box.setValue(min)
+        self.strength_min_box.setValue(min_strength)
         spinbox_layout.addWidget(self.strength_min_box)
 
         self.strength_max_box = QtGui.QDoubleSpinBox(self)
         self.strength_max_box.setRange(0.00, 10.00)
-        self.strength_max_box.setValue(max)
+        self.strength_max_box.setValue(max_strength)
         spinbox_layout.addWidget(self.strength_max_box)
 
         strength_apply_btn = QtGui.QPushButton("Apply strength range")
@@ -158,11 +158,11 @@ class MainWindow(QtGui.QMainWindow):
         vis_vbox = QtGui.QVBoxLayout()
         vis_group.setLayout(vis_vbox)
 
-         # Opacity Label
+        # Opacity Label
         opacity_label = QtGui.QLabel("Opacity of map")
         vis_vbox.addWidget(opacity_label)
 
-        # Slider to change years
+        # Slider to change opcaity
         self.opacity_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         self.opacity_slider.setValue(100*self.visualization.get_map_opacity())
         self.opacity_slider.setRange(0, 100)
@@ -218,14 +218,16 @@ class MainWindow(QtGui.QMainWindow):
         self.visualization.start_movie(self)
 
     def on_strength_filter_applied(self):
-        min = self.strength_min_box.value()
-        max = self.strength_max_box.value()
-        print "Set strength filter to " + str(min) + "/" + str(max)
-        self.visualization.set_strength_range(min, max)
+        min_strength = self.strength_min_box.value()
+        max_strength = self.strength_max_box.value()
+        print "Set strength filter to " + str(min_strength) + "/" + str(max_strength)
+        #self.visualization.set_strength_range(min_strength, max_strength)
 
         # update data slider as well because data might not be available anymore
-        self.slider_data_array = self.visualization.get_data_segments()
-        self.mds_slider.setMaximum(len(self.slider_data_array)-1)
+        #self.slider_data_array = self.visualization.get_data_segments()
+        #self.mds_slider.setMaximum(len(self.slider_data_array)-1)
+
+
 
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes |

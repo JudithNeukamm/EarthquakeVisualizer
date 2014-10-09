@@ -142,6 +142,7 @@ class EarthquakeVisualization:
         self.get_data_segments()  # call it to create the segments
         self.set_data_segment(self.first_data_segment)
 
+
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
 
