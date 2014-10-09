@@ -4,16 +4,17 @@ from vtk import *
 class EarthquakePlaneActor(vtkActor):
     
     def __init__(self, file_name, bounds):
-        self.pic = file_name
         self.reader = None
+        self.mapper = None
+        self.texture = None
         
-        self.init_reader()
+        self.init_reader(file_name)
         self.init_mapper(bounds)
         self.init_texture()
 
-    def init_reader(self):
+    def init_reader(self, file_name):
         jpg_reader = vtk.vtkJPEGReader()
-        jpg_reader.SetFileName(self.pic)
+        jpg_reader.SetFileName(file_name)
         self.reader = jpg_reader
 
     def init_texture(self):
@@ -21,7 +22,8 @@ class EarthquakePlaneActor(vtkActor):
         texture.SetInput(self.reader.GetOutput())
         texture.SetInputConnection(self.reader.GetOutputPort())
         texture.InterpolateOn()
-        self.SetTexture(texture)
+        self.texture = texture
+        self.SetTexture(self.texture)
 
     def init_mapper(self, bounds):
         plane = vtkPlaneSource()
@@ -31,4 +33,5 @@ class EarthquakePlaneActor(vtkActor):
 
         plane_mapper = vtk.vtkPolyDataMapper()
         plane_mapper.SetInputConnection(plane.GetOutputPort())
-        self.SetMapper(plane_mapper)
+        self.mapper = plane_mapper
+        self.SetMapper(self.mapper)

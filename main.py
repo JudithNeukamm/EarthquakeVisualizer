@@ -1,4 +1,4 @@
-import sys
+import os, sys
 import vtk
 from PyQt4 import QtCore, QtGui
 from vtk.qt4.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -108,6 +108,11 @@ class MainWindow(QtGui.QMainWindow):
         vbox.setAlignment(QtCore.Qt.AlignTop)
         settings_widget.setLayout(vbox)
 
+        # Uppsala Logo
+        logo_pixmap = QtGui.QPixmap(os.getcwd() + "/images/Uppsala-University-Logo.png")
+        logo = QtGui.QLabel()
+        logo.setPixmap(logo_pixmap)
+
         # ---------------------------------------------------
         # Movie Group
         # ---------------------------------------------------
@@ -120,39 +125,6 @@ class MainWindow(QtGui.QMainWindow):
         button1 = QtGui.QPushButton("Play Movie")
         movie_vbox.addWidget(button1)
         button1.clicked.connect(self.onPlayMovieButtonClicked)
-
-        # ---------------------------------------------------
-        # Manually Data Selection = mds
-        # ---------------------------------------------------
-
-        mds_group = QtGui.QGroupBox("Manually Data Changes")
-        mds_vbox = QtGui.QVBoxLayout()
-        mds_group.setLayout(mds_vbox)
-
-        # Year Label
-        mds_label = QtGui.QLabel("Selecting data by time")
-        mds_vbox.addWidget(mds_label)
-
-        # Slider to change years
-        self.mds_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        self.current_mds_value = 0
-        self.mds_slider.setValue(self.current_mds_value)
-        self.mds_slider.setMinimum(0)
-        self.mds_slider.setMaximum(len(self.slider_data_array)-1)
-        self.mds_slider.setTickInterval(1)
-        self.mds_slider.setSingleStep(1)
-        self.mds_slider.setTickPosition(QtGui.QSlider.TicksRight)
-        mds_vbox.addWidget(self.mds_slider)
-
-        # Current Value Label
-        self.mds_label = QtGui.QLabel()
-        self.on_slider_released()
-        mds_vbox.addWidget(self.mds_label)
-
-        # Slider events
-        self.connect(self.mds_slider, QtCore.SIGNAL('valueChanged(int)'), self.on_slider_moved)
-        self.connect(self.mds_slider, QtCore.SIGNAL('sliderReleased()'), self.on_slider_released)
-
 
         # ---------------------------------------------------
         # Strength Group
@@ -208,9 +180,13 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.opacity_slider, QtCore.SIGNAL('sliderReleased()'), self.on_opacity_slider_released)
 
         # Order of groups
+        spacer = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        vbox.addWidget(logo)
+        vbox.addItem(spacer)
         vbox.addWidget(vis_group)
-        vbox.addWidget(mds_group)
+        vbox.addItem(spacer)
         vbox.addWidget(strength_group)
+        vbox.addItem(spacer)
         vbox.addWidget(movie_group)
 
         return settings_widget

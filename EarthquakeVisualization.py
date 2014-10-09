@@ -110,7 +110,7 @@ class EarthquakeVisualization:
         self.actors['outline'] = outline_actor
 
         # Map
-        image_actor = EarthquakePlaneActor('map.jpg', self.reader.get_bounds())
+        image_actor = EarthquakePlaneActor('images/map.jpg', self.reader.get_bounds())
         image_actor.GetProperty().SetOpacity(self.default_opacity)
         self.actors['map'] = image_actor
 
@@ -144,25 +144,9 @@ class EarthquakeVisualization:
 
     def start_movie(self, main_window):
         print "EarthquakeVisualization.py: start_movie()"
+
         # going through every year and month and display data
-
-
-        all_years_available = self.data_dict.keys()
-        all_years_available.sort()
-
-        for year in all_years_available:
-
-            all_months_available = self.data_dict[year].keys()
-            all_months_available.sort()
-
-            for month in all_months_available:
-                print "Movie is in " + year + "/" + month
-                points = self.data_dict[str(year)][str(month)]['points']
-                scalars = self.data_dict[str(year)][str(month)]['scalar']
-                #tid = self.data_dict[str(year)][str(month)]['tid']
-
-                self.data.SetPoints(points)
-                self.data.GetPointData().SetScalars(scalars)
-                self.actors['glyph_actor'].set_data(self.data)
-                main_window.render_window.Render()
-                time.sleep(2)
+        for key in self.get_data_segments():
+            self.set_data_segment(key)
+            main_window.render_window.Render()
+            time.sleep(1)
